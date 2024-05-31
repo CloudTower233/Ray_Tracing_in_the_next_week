@@ -1,4 +1,3 @@
-#pragma once
 #ifndef BVH_H
 #define BVH_H
 
@@ -6,6 +5,7 @@
 
 #include "hittable.h"
 #include "hittable_list.h"
+
 #include <algorithm>
 
 
@@ -32,20 +32,6 @@ public:
     aabb box;
 };
 
-bool bvh_node::bounding_box(double time0, double time1, aabb& output_box) const {
-    output_box = box;
-    return true;
-}
-
-bool bvh_node::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
-    if (!box.hit(r, t_min, t_max))
-        return false;
-
-    bool hit_left = left->hit(r, t_min, t_max, rec);
-    bool hit_right = right->hit(r, t_min, hit_left ? rec.t : t_max, rec);
-
-    return hit_left || hit_right;
-}
 
 inline bool box_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b, int axis) {
     aabb box_a;
@@ -69,6 +55,7 @@ bool box_y_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b) {
 bool box_z_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b) {
     return box_compare(a, b, 2);
 }
+
 
 bvh_node::bvh_node(
     const std::vector<shared_ptr<hittable>>& src_objects,
@@ -113,4 +100,23 @@ bvh_node::bvh_node(
 
     box = surrounding_box(box_left, box_right);
 }
+
+
+bool bvh_node::hit(const ray& r, double t_min, double t_max, hit_record& rec) const {
+    if (!box.hit(r, t_min, t_max))
+        return false;
+
+    bool hit_left = left->hit(r, t_min, t_max, rec);
+    bool hit_right = right->hit(r, t_min, hit_left ? rec.t : t_max, rec);
+
+    return hit_left || hit_right;
+}
+
+
+bool bvh_node::bounding_box(double time0, double time1, aabb& output_box) const {
+    output_box = box;
+    return true;
+}
+
+
 #endif

@@ -1,4 +1,5 @@
 #include "rtweekend.h"
+
 #include "box.h"
 #include "bvh.h"
 #include "camera.h"
@@ -9,7 +10,6 @@
 #include "moving_sphere.h"
 #include "sphere.h"
 #include "texture.h"
-#include "aarect.h"
 
 #include <iostream>
 
@@ -112,7 +112,7 @@ hittable_list two_perlin_spheres() {
 
 
 hittable_list earth() {
-    auto earth_texture = make_shared<image_texture>("earthmap.jpg");
+    auto earth_texture = make_shared<image_texture>("texture/earthmap.jpg");
     auto earth_surface = make_shared<lambertian>(earth_texture);
     auto globe = make_shared<sphere>(point3(0, 0, 0), 2, earth_surface);
 
@@ -149,7 +149,7 @@ hittable_list cornell_box() {
     objects.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
     objects.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
     objects.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
-    
+
     shared_ptr<hittable> box1 = make_shared<box>(point3(0, 0, 0), point3(165, 330, 165), white);
     box1 = make_shared<rotate_y>(box1, 15);
     box1 = make_shared<translate>(box1, vec3(265, 0, 295));
@@ -159,9 +159,10 @@ hittable_list cornell_box() {
     box2 = make_shared<rotate_y>(box2, -18);
     box2 = make_shared<translate>(box2, vec3(130, 0, 65));
     objects.add(box2);
-    
+
     return objects;
 }
+
 
 hittable_list cornell_smoke() {
     hittable_list objects;
@@ -196,7 +197,7 @@ hittable_list cornell_smoke() {
 hittable_list final_scene() {
     hittable_list boxes1;
     auto ground = make_shared<lambertian>(color(0.48, 0.83, 0.53));
-
+    
     const int boxes_per_side = 20;
     for (int i = 0; i < boxes_per_side; i++) {
         for (int j = 0; j < boxes_per_side; j++) {
@@ -211,7 +212,7 @@ hittable_list final_scene() {
             boxes1.add(make_shared<box>(point3(x0, y0, z0), point3(x1, y1, z1), ground));
         }
     }
-
+    
     hittable_list objects;
 
     objects.add(make_shared<bvh_node>(boxes1, 0, 1));
@@ -235,7 +236,7 @@ hittable_list final_scene() {
     boundary = make_shared<sphere>(point3(0, 0, 0), 5000, make_shared<dielectric>(1.5));
     objects.add(make_shared<constant_medium>(boundary, .0001, color(1, 1, 1)));
 
-    auto emat = make_shared<lambertian>(make_shared<image_texture>("earthmap.jpg"));
+    auto emat = make_shared<lambertian>(make_shared<image_texture>("texture/earthmap.jpg"));
     objects.add(make_shared<sphere>(point3(400, 200, 400), 100, emat));
     auto pertext = make_shared<noise_texture>(0.1);
     objects.add(make_shared<sphere>(point3(220, 280, 300), 80, make_shared<lambertian>(pertext)));
@@ -257,6 +258,7 @@ hittable_list final_scene() {
     return objects;
 }
 
+
 int main() {
 
     // Image
@@ -276,7 +278,7 @@ int main() {
     auto aperture = 0.0;
     color background(0, 0, 0);
 
-    switch (8) {
+    switch (0) {
     case 1:
         world = random_scene();
         background = color(0.70, 0.80, 1.00);
@@ -364,7 +366,7 @@ int main() {
 
     for (int j = image_height - 1; j >= 0; --j) {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
-        for (int i = 0; i < image_width; ++i) {
+        for (int i = 0; i < image_width; ++i) {          
             color pixel_color(0, 0, 0);
             for (int s = 0; s < samples_per_pixel; ++s) {
                 auto u = (i + random_double()) / (image_width - 1);
